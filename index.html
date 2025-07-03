@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Schema N8N + Evolution</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .keys-generator {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .keys-generator p {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .keys-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .keys-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            display: none;
+        }
+        
+        .result h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .result textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+        
+        .copy-btn {
+            margin-top: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .urls-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .urls-info h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .urls-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .urls-info li {
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 GERADOR DE SCHEMA</h1>
+            <p>N8N + Evolution API + Redis + PostgreSQL</p>
+            <div class="keys-generator">
+                <p>🔑 Precisa gerar chaves de segurança?</p>
+                <a href="https://acte.ltd/utils/randomkeygen" target="_blank" class="keys-btn">
+                    ✨ Gerar Chaves Aqui
+                </a>
+            </div>
+        </div>
+        
+        <div class="form-container">
+            <form id="schemaForm">
+                <div class="form-group">
+                    <label for="projectName">Nome do Projeto:</label>
+                    <input type="text" id="projectName" name="projectName" placeholder="arcane" required>
+                    <div class="help-text">Este será o prefixo dos seus domínios (ex: arcane-n8n-editor)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="defaultDomain">Default Domain (sem https):</label>
+                    <input type="text" id="defaultDomain" name="defaultDomain" placeholder="d8wm7f.easypanel.host" required>
+                    <div class="help-text">Seu domínio do EasyPanel (encontre no painel)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apiEvolution">API Evolution Key:</label>
+                    <input type="text" id="apiEvolution" name="apiEvolution" placeholder="631F474A2EE5268BBC92E775664F5" required>
+                    <div class="help-text">Chave da API Evolution</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="n8nEncryptionKey">N8N Encryption Key:</label>
+                    <input type="text" id="n8nEncryptionKey" name="n8nEncryptionKey" placeholder="621E2CEC11C5D184A8D5E9CDF9AE1" required>
+                    <div class="help-text">Chave de criptografia do N8N</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="redisKey">Redis Key:</label>
+                    <input type="text" id="redisKey" name="redisKey" placeholder="5A482BFC8E943FF31199BA4D58AD1" required>
+                    <div class="help-text">Senha do Redis</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="postgresKey">PostgreSQL Key:</label>
+                    <input type="text" id="postgresKey" name="postgresKey" placeholder="229353DFFD15594D74A5BBBD766F1" required>
+                    <div class="help-text">Senha do PostgreSQL</div>
+                </div>
+                
+                <button type="submit" class="generate-btn" id="generateBtn">
+                    ✨ Gerar Schema
+                </button>
+            </form>
+            
+            <div class="error" id="errorDiv"></div>
+            
+            <div class="result" id="resultDiv">
+                <h3>✅ Schema Gerado com Sucesso!</h3>
+                <div class="urls-info" id="urlsInfo" style="display: none;">
+                    <h4>🌐 URLs que serão criadas:</h4>
+                    <ul id="urlsList"></ul>
+                </div>
+                <textarea id="schemaResult" readonly></textarea>
+                <button class="copy-btn" onclick="copyToClipboard()">📋 Copiar Schema</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IMPORTANTE: Substitua esta URL pela URL do seu webhook do N8N
+        const WEBHOOK_URL = 'http://18.232.66.92:5678/webhook/gerar-schema';
+        
+        document.getElementById('schemaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const errorDiv = document.getElementById('errorDiv');
+            const resultDiv = document.getElementById('resultDiv');
+            
+            // Reset
+            errorDiv.style.display = 'none';
+            resultDiv.style.display = 'none';
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ Gerando...';
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Mostrar URLs
+                const urlsInfo = document.getElementById('urlsInfo');
+                const urlsList = document.getElementById('urlsList');
+                urlsList.innerHTML = '';
+                
+                if (result.urls) {
+                    Object.entries(result.urls).forEach(([service, url]) => {
+                        const li = document.createElement('li');
+                        li.textContent = `${service}: ${url}`;
+                        urlsList.appendChild(li);
+                    });
+                    urlsInfo.style.display = 'block';
+                }
+                
+                // Mostrar schema
+                document.getElementById('schemaResult').value = JSON.stringify(result.schema, null, 2);
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                errorDiv.textContent = `Erro: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '✨ Gerar Schema';
+            }
+        });
+        
+        function copyToClipboard() {
+            const textarea = document.getElementById('schemaResult');
+            textarea.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copiado!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
